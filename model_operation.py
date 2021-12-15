@@ -42,33 +42,43 @@ def file_exe(o_path, r_path):
                 f1.write(line)
                 if line.startswith('@implementation'):
                     key = line.split('@implementation')[-1].strip().replace('\n', '')
-                    f1.write('{\n')
                     props = props_map[key]
-                    mp = []
-                    for prop in props:
-                        if '*' in prop:
-                            pps = prop.split('*')
-                            t = pps[0].strip()
-                            v = pps[1].strip()
-                            f1.write('{} *_{};\n'.format(t, v))
-                            kk = '-({} *){}'.format(t, v)
-                            vv = 'return _{}'.format(v)
-                            mp.append(kk + '{' + vv + ';}\n')
-                        else:
-                            pps = prop.split(' ')
-                            t = pps[0].strip()
-                            v = pps[1].strip()
-                            f1.write('{} _{};\n'.format(t, v))
-                            kk = '-({}){}'.format(t, v)
-                            vv = 'return _{}'.format(v)
-                            mp.append(kk + '{' + vv + ';}\n')
-                    f1.write('}\n')
-                    for m in mp:
-                        f1.write(m)
+                    if len(props) > 0:
+                        f1.write('{\n')
+                        mp = []
+                        for prop in props:
+                            if 'NSArray' in prop and '>' in prop:
+                                pps = prop.split('*')
+                                t = pps[0].strip()
+                                t = '{}*>'.format(t)
+                                v = pps[-1].strip()
+                                f1.write('    {} *_{};\n'.format(t, v))
+                                kk = '-({} *){}'.format(t, v)
+                                vv = 'return _{}'.format(v)
+                                mp.append(kk + '{' + vv + ';}\n')
+                            elif '*' in prop:
+                                pps = prop.split('*')
+                                t = pps[0].strip()
+                                v = pps[1].strip()
+                                f1.write('    {} *_{};\n'.format(t, v))
+                                kk = '-({} *){}'.format(t, v)
+                                vv = 'return _{}'.format(v)
+                                mp.append(kk + '{' + vv + ';}\n')
+                            else:
+                                pps = prop.split(' ')
+                                t = pps[0].strip()
+                                v = pps[1].strip()
+                                f1.write('    {} _{};\n'.format(t, v))
+                                kk = '-({}){}'.format(t, v)
+                                vv = 'return _{}'.format(v)
+                                mp.append(kk + '{' + vv + ';}\n')
+                        f1.write('}\n')
+                        for m in mp:
+                            f1.write(m)
 
 
 if __name__ == '__main__':
-    doc_path = '/Users/xxx/Desktop/'
+    doc_path = '/Users/xxx/Desktop/1231/'
     file_operation(doc_path)
     pass
 
